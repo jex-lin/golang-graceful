@@ -20,7 +20,7 @@ Restart with zero-down time
     (pid: 14107) Doing job...
     (pid: 14107) Running successfully.
     (pid: 13468) Job done!
-    (pid: 13468) Stop receiving jobs.
+    (pid: 13468) Stop doing jobs.
     (pid: 13468) Terminated.                        <= Parent process killed.
     (pid: 13468) Parent process has been killed.
 
@@ -30,7 +30,7 @@ Shutdown
     $ kill 13468
     (pid: 13468) Terminating...
     (pid: 13468) Job done!
-    (pid: 13468) Stop receiving jobs.
+    (pid: 13468) Stop doing jobs.
     (pid: 13468) Terminated.
 
 

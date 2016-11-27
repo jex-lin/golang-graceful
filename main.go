@@ -64,7 +64,7 @@ func startWorking(pid int) {
 	for {
 		select {
 		case <-sigHandler.StopCh:
-			fmt.Printf("(pid: %d) Stop receiving jobs.\n", pid)
+			fmt.Printf("(pid: %d) Stop doing jobs.\n", pid)
 			return
 		default:
 			doJob(pid)
