@@ -1,39 +1,43 @@
-## Run
+# Graceful shutdown and restart
 
-This is a simple example that show you the idea how to let your app shutdown or restart gracefully.
+This is a simple example that show you how to let your app shutdown or restart gracefully and achieve zero-down time.
 
-#### window 1
+
+
+
+# Run example
+
+### Window 1) Start
 
     $ go build && ./golang-graceful-example
-    (pid: 13468) Started...
-    (pid: 13468) Doing job...
-    (pid: 13468) Running successfully
+    (pid: 94178) Started...
+    (pid: 94178) Running successfully.
 
-#### window 2
+### Window 2) Request and you will get blocked for 10 seconds.
+
+    $ curl localhost:3333
+
+### Window 3) Restart or shutdown to see what happend.
 
 Restart with zero-down time
 
-    $ kill -1 13468
-    (pid: 13468) Forking...
-    (pid: 13468) Kill self, terminating...
-    (pid: 14107) Started...                         <= New process started.
-    (pid: 14107) Doing job...
-    (pid: 14107) Running successfully.
-    (pid: 13468) Job done!
-    (pid: 13468) Stop doing jobs.
-    (pid: 13468) Terminated.                        <= Parent process killed.
-    (pid: 13468) Parent process has been killed.
-
+    $ kill -1 94178
 
 Shutdown
 
-    $ kill 13468
-    (pid: 13468) Terminating...
-    (pid: 13468) Job done!
-    (pid: 13468) Stop doing jobs.
-    (pid: 13468) Terminated.
+    $ kill 94178
 
 
-## Note
 
-* Do not try to catch `SIGKILL` and `SIGSTOP` in code, there is reason : [os/signal: Prevent developers from catching SIGKILL and SIGSTOP](https://github.com/golang/go/issues/9463)
+
+
+# Issues
+
+* Graceful shutdown http server. Closing listener will interrupt processing request.
+
+
+
+
+# Note
+
+* It doesn't work to catch signal of `SIGKILL` and `SIGSTOP`, there is the reason : [os/signal: Prevent developers from catching SIGKILL and SIGSTOP](https://github.com/golang/go/issues/9463)
