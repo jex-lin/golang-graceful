@@ -70,14 +70,6 @@ func startWorking() {
 		select {
 		case <-sigHandler.StopCh:
 			fmt.Printf("(pid: %d) Stop doing job and wait for processing job to be done.\n", pid)
-			if netListener != nil {
-				// TODO Close listener of parent process to prevent new connection continuing receiving.
-				// if err := netListener.Close(); err != nil {
-				//	fmt.Printf("(pid: %d) Fail to close net.Listener.\n", pid)
-				// } else {
-				//	fmt.Printf("(pid: %d) Close net.Listener.\n", pid)
-				// }
-			}
 			return
 		default:
 			sigHandler.SyncWG.Add(1)
@@ -115,13 +107,12 @@ func getListener() (l net.Listener) {
 		f := os.NewFile(3, "") // 0, 1, 2 is preserved for standard input, output and error, so started with 3.
 		l, err = net.FileListener(f)
 		if err != nil {
-			fmt.Printf("(pid: %d) Fail to inherit socket file from parent process. err: %v\n", pid, err)
+			fmt.Printf("(pid: %d) Failed to inherit socket file from parent process. err: %v\n", pid, err)
 			os.Exit(1)
 		}
 		fmt.Printf("(pid: %d) socket file inherited from parent process.\n", pid)
 	}
 	return
-
 }
 
 func fork() {
