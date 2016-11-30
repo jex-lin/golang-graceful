@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"syscall"
 	"time"
@@ -120,12 +121,17 @@ func fork() {
 	tl := netListener.(*net.TCPListener)
 	file, _ := tl.File()
 
-	path := "./golang-graceful-example"
-	cmd := exec.Command(path)
+	// Current app binary file
+	bin_path, err := filepath.Abs(os.Args[0])
+	if err != nil {
+		fmt.Println("Failed to get absolute path of current binary.")
+	}
+
+	cmd := exec.Command(bin_path)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.ExtraFiles = []*os.File{file}
-	err := cmd.Start()
+	err = cmd.Start()
 	if err != nil {
 		log.Fatalf("Failed to fork process, error: %v\n", err)
 	}
