@@ -22,22 +22,24 @@ type GraceHandler struct {
 type server struct{}
 
 func main() {
+	http_port := "3333"
 	pid = syscall.Getpid()
-	log.Printf("(pid: %d) Started...\n", pid)
 	grace.StopCh = make(chan bool)
 
-	go startWorking()
+	log.Printf("(pid: %d) Started...\n", pid)
+	log.Printf("(pid: %d) Port: %s\n", pid, http_port)
+
+	go startHttpServer(http_port)
+	go startWorker()
 	handleSignals()
 }
 
 func handleSignals() {
-	var sig os.Signal
 	sig_chan := make(chan os.Signal, 1)
 	signal.Notify(sig_chan, syscall.SIGINT, syscall.SIGTERM)
 	log.Printf("(pid: %d) Running successfully.\n", pid)
 
-	sig = <-sig_chan
-	switch sig {
+	switch <-sig_chan {
 	// Stop
 	case syscall.SIGINT, // 2
 		syscall.SIGTERM: // 15
@@ -65,10 +67,7 @@ func handleSignals() {
 	}
 }
 
-func startWorking() {
-	// API
-	go startHttpServer()
-
+func startWorker() {
 	// Do job
 	for {
 		select {
@@ -90,8 +89,8 @@ func doJob() {
 	log.Printf("(pid: %d) Job done!\n", pid)
 }
 
-func startHttpServer() {
-	grace.Http = &http.Server{Addr: ":3333"}
+func startHttpServer(port string) {
+	grace.Http = &http.Server{Addr: ":" + port}
 	http.HandleFunc("/", index)
 	if err := grace.Http.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
@@ -99,8 +98,8 @@ func startHttpServer() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	log.Printf("(pid: %d) Doing request ....\n", pid)
+	log.Printf("(pid: %d) Doing request ...\n", pid)
 	time.Sleep(8 * time.Second)
 	log.Printf("(pid: %d) Request done!\n", pid)
-	w.Write([]byte("Time: " + time.Now().Format(time.RFC1123)))
+	w.Write([]byte("Request done!\n"))
 }
